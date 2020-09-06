@@ -1,7 +1,7 @@
 {
     "name": "php-addons/bc-assert",
     "type": "library",
-    "description": "Assertions with bcmath functions",
+    "description": "A wrapper around webmozart/assert that implements assertions with bcmath functions.",
     "keywords": ["assert", "bcmath", "webmozart"],
     "homepage": "https://github.com/php-addons/bc-assert",
     "license": "MIT",
