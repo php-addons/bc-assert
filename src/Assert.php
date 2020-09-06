@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace PhpAddons\BcAssert;
 
 use InvalidArgumentException;
+use ReflectionClass;
+use ReflectionMethod;
 use Webmozart\Assert\Assert as WebmozartAssert;
 use Webmozart\Assert\Mixin as WebmozartMixin;
 
 /**
  * @mixin WebmozartMixin
  * @mixin Mixin
- *
- * @method static numeric($value, $message = '')
- * @method static isIterable($value, $message = '')
  */
 final class Assert
 {
@@ -153,28 +152,40 @@ final class Assert
 
     public static function __callStatic($name, $arguments)
     {
-        if (\strpos($name, 'nullOr') === 0) {
-            if (null !== $arguments[0]) {
-                $method = \lcfirst(\substr($name, 6));
-                \call_user_func_array([static::class, $method], $arguments);
-            }
+        $class = new ReflectionClass(static::class);
+        $methods = array_map(static function (ReflectionMethod $method) {
+            return $method->getName();
+        }, $class->getMethods(ReflectionMethod::IS_STATIC));
 
-            return;
+        if (\strpos($name, 'nullOr') === 0) {
+            $method = \lcfirst(\substr($name, 6));
+
+            if (in_array($method, $methods, true)) {
+                if (null !== $arguments[0]) {
+                    $method = \lcfirst(\substr($name, 6));
+                    \call_user_func_array([static::class, $method], $arguments);
+                }
+
+                return;
+            }
         }
 
         if (\strpos($name, 'all') === 0) {
             static::isIterable($arguments[0]);
 
             $method = \lcfirst(\substr($name, 3));
-            $args = $arguments;
 
-            foreach ($arguments[0] as $entry) {
-                $args[0] = $entry;
+            if (in_array($method, $methods, true)) {
+                $args = $arguments;
 
-                \call_user_func_array([static::class, $method], $args);
+                foreach ($arguments[0] as $entry) {
+                    $args[0] = $entry;
+
+                    \call_user_func_array([static::class, $method], $args);
+                }
+
+                return;
             }
-
-            return;
         }
 
         \call_user_func_array([WebmozartAssert::class, $name], $arguments);
