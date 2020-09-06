@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace PhpAddons\BcAssert;
 
 use InvalidArgumentException;
-use ReflectionClass;
-use ReflectionMethod;
 use Webmozart\Assert\Assert as WebmozartAssert;
 
 /**
@@ -150,10 +148,7 @@ final class Assert
 
     public static function __callStatic($name, $arguments)
     {
-        $class = new ReflectionClass(static::class);
-        $methods = array_map(static function (ReflectionMethod $method) {
-            return $method->getName();
-        }, $class->getMethods(ReflectionMethod::IS_STATIC));
+        $methods = ['bcSame', 'bcNotSame', 'bcGreaterThan', 'bcGreaterThanEq', 'bcLessThan', 'bcLessThanEq', 'bcRange'];
 
         if (\strpos($name, 'nullOr') === 0) {
             $method = \lcfirst(\substr($name, 6));
