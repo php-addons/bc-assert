@@ -8,10 +8,8 @@ use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionMethod;
 use Webmozart\Assert\Assert as WebmozartAssert;
-use Webmozart\Assert\Mixin as WebmozartMixin;
 
 /**
- * @mixin WebmozartMixin
  * @mixin Mixin
  */
 final class Assert
