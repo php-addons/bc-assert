@@ -1,6 +1,8 @@
-# Bcmath Assert (extends Webmozart Assert)
+# Bcmath Assert
 
-Small library that implements assertions with bcmath functions.
+[![Build Status](https://travis-ci.org/php-addons/bc-assert.svg?branch=master)](https://travis-ci.com/github/php-addons/bc-assert)
+
+A wrapper around [webmozart/assert](https://github.com/webmozart/assert) that implements assertions with [bcmath](https://www.php.net/manual/en/ref.bc.php) functions.
 
 **Required PHP 7.3.0 or above.**
 
