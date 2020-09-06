@@ -11,8 +11,11 @@ use Webmozart\Assert\Mixin as WebmozartMixin;
 /**
  * @mixin WebmozartMixin
  * @mixin Mixin
+ *
+ * @method static numeric($value, $message = '')
+ * @method static isIterable($value, $message = '')
  */
-class Assert extends WebmozartAssert
+final class Assert
 {
     /**
      * @psalm-pure
@@ -146,5 +149,48 @@ class Assert extends WebmozartAssert
                 \sprintf($message ?: 'Expected a value between %2$s and %3$s. Got: %s', $value, $min, $max)
             );
         }
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        if (\strpos($name, 'nullOr') === 0) {
+            if (null !== $arguments[0]) {
+                $method = \lcfirst(\substr($name, 6));
+                \call_user_func_array([static::class, $method], $arguments);
+            }
+
+            return;
+        }
+
+        if (\strpos($name, 'all') === 0) {
+            static::isIterable($arguments[0]);
+
+            $method = \lcfirst(\substr($name, 3));
+            $args = $arguments;
+
+            foreach ($arguments[0] as $entry) {
+                $args[0] = $entry;
+
+                \call_user_func_array([static::class, $method], $args);
+            }
+
+            return;
+        }
+
+        \call_user_func_array([WebmozartAssert::class, $name], $arguments);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     *
+     * @psalm-pure
+     */
+    private static function reportInvalidArgument(string $message): void
+    {
+        throw new InvalidArgumentException($message);
+    }
+
+    private function __construct()
+    {
     }
 }
